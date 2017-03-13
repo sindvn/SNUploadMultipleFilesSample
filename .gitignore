@@ -43,15 +43,16 @@ playground.xcworkspace
 # you should judge for yourself, the pros and cons are mentioned at:
 # https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
 #
-# Pods/
 
-# Carthage
+Pods/
+Podfile.lock
+Carthage
 #
 # Add this line if you want to avoid checking in source code from Carthage dependencies.
-
 Carthage/Checkouts
-Carthage/Build
 
+Carthage/Build
+Cartfile.resolved
 # fastlane
 #
 # It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
@@ -63,3 +64,6 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots
 fastlane/test_output
+
+.DS_Store
+.idea
