@@ -60,6 +60,7 @@ final class PickPhotosViewController: UIViewController {
             options.sortDescriptors = [
                 NSSortDescriptor(key: "creationDate", ascending: true)
             ]
+            options.predicate = NSPredicate.init(format: "mediaType = %d || mediaType = %d",PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
             fetchResult = PHAsset.fetchAssets(with: options)
         }
         
