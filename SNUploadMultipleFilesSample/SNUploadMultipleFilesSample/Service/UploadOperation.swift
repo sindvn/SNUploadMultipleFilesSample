@@ -41,7 +41,14 @@ class UploadOperation {
             
             let URL = try! URLRequest(url: "http://example.com", method: .post, headers: ["Authorization" : "Token"])
             UploadService.sharedInstance.sessionManager.upload(multipartFormData: { (multipartFormData) in
-                
+                filesUpload.forEach({ (key, mimeType, fileName, urlPath, fileData) in
+                    if let url = urlPath {
+                        multipartFormData.append(url, withName: key, fileName: fileName, mimeType: mimeType)
+                    }
+                    else if let data = fileData {
+                        multipartFormData.append(data, withName: key, fileName: fileName, mimeType: mimeType)
+                    }
+                })
             }, usingThreshold: 1024 * 32, with: URL, encodingCompletion: { (result) in
                 switch result {
                 case .success(let upload, _, _):
