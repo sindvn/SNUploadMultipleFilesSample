@@ -14,13 +14,14 @@ class UploadService {
     
     static let sharedInstance = UploadService()
     private init(){
-        self.sessionManager = self.defaultAlamofireManager()
     }
     
     deinit {
     }
     
-    var sessionManager : Alamofire.SessionManager!
+    private lazy var sessionManager : SessionManager  = {
+        return self.backgroundAlamofireManager() // don't init background session many times -> error: A background URLSession with identifier exist
+    }()
     
     private let imageManager = PHCachingImageManager()
     private let resourceManager = PHAssetResourceManager.default()
@@ -68,7 +69,7 @@ class UploadService {
         if isStartServiceUpload == false {
             print("startService")
             isStartServiceUpload = true
-            self.sessionManager = backgroundAlamofireManager()
+//            self.sessionManager = backgroundAlamofireManager()
             self.registerBackgroundTask()
         }
     }
@@ -76,7 +77,7 @@ class UploadService {
     private func stopService() {
         print("stopService")
         isStartServiceUpload = false
-        self.sessionManager = defaultAlamofireManager()
+//        self.sessionManager = defaultAlamofireManager()
         self.endBackgroundTask()
     }
     

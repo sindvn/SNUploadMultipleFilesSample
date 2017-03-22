@@ -23,7 +23,7 @@ class UploadOperation {
         self.resourceManager = resourceManager
     }
     
-    func uploadMedia(successBlock: @escaping ((Data?) -> Void), failureBlock: @escaping ((Error?) -> Void)) {
+    func uploadMedia(successBlock: @escaping ((Any) -> Void), failureBlock: @escaping ((Error?) -> Void)) {
         
         self.prepareForUploading(assets: self.assets) {[weak self] (assetsUpload) in
             
@@ -40,22 +40,35 @@ class UploadOperation {
             })
             
             let URL = try! URLRequest(url: "http://example.com", method: .post, headers: ["Authorization" : "Token"])
-            UploadService.sharedInstance.sessionManager.upload(multipartFormData: { (multipartFormData) in
+            UploadService.sharedInstance.sessionManager.upload(multipartFormData: { (multipart) in
+                for (key, value) in requestParameters {
+                    if let data = String(describing: value).data(using:.utf8) {
+                        multipart.append(data, withName: key)
+                    }
+                }
                 filesUpload.forEach({ (key, mimeType, fileName, urlPath, fileData) in
                     if let url = urlPath {
-                        multipartFormData.append(url, withName: key, fileName: fileName, mimeType: mimeType)
+                        multipart.append(url, withName: key, fileName: fileName, mimeType: mimeType)
                     }
                     else if let data = fileData {
-                        multipartFormData.append(data, withName: key, fileName: fileName, mimeType: mimeType)
+                        multipart.append(data, withName: key, fileName: fileName, mimeType: mimeType)
                     }
                 })
             }, usingThreshold: 1024 * 32, with: URL, encodingCompletion: { (result) in
                 switch result {
                 case .success(let upload, _, _):
                     
-                    upload.responseJSON { response in
-                        self?.clearDataWhenFinish(assetsUpload: assetsUpload)
-                        successBlock(response.data)
+                    upload.validate(statusCode: 200..<500)
+                        .responseJSON { response in
+                            switch response.result {
+                            case .success(let value):
+                                self?.clearDataWhenFinish(assetsUpload: assetsUpload)
+                                successBlock(value)
+                            case .failure(let error):
+                                self?.clearDataWhenFinish(assetsUpload: assetsUpload)
+                                failureBlock(error)
+                            }
+                        
                         
 //                        print(response?.request)  // original URL request
 //                        print(response.response) // URL response
