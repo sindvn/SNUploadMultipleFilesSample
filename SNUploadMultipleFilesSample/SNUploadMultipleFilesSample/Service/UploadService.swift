@@ -19,7 +19,7 @@ class UploadService {
     deinit {
     }
     
-    private lazy var sessionManager : SessionManager  = {
+    lazy var sessionManager : SessionManager  = {
         return self.backgroundAlamofireManager() // don't init background session many times -> error: A background URLSession with identifier exist
     }()
     
