@@ -70,6 +70,25 @@ class MediaUpload {
     }
     
     private func writeVideoToTempDirectory(complete: @escaping () -> Void) {
+        
+        // ios 8
+        // option .fastFormat - fastest available (typ. 360p MP4)
+        /*
+        let options = PHVideoRequestOptions()
+        options.deliveryMode = .fastFormat
+        self.imageManager.requestAVAsset(forVideo: self.asset, options:options) { (avAsset, avAudio, info) in
+            if let avAsset = avAsset as? AVURLAsset {
+                do {
+                    let localPath = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("name")
+                    try FileManager.default.copyItem(at: avAsset.url, to: localPath)
+                } catch let error as NSError {
+                    print(error.debugDescription)
+                }
+            }
+        }
+        */
+        
+        // ios9
         if let resource = PHAssetResource.assetResources(for: self.asset).first {
             let localPath = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(resource.originalFilename)
             self.resourceManager.writeData(for: resource, toFile: localPath, options: nil, completionHandler: {[weak self] error in
